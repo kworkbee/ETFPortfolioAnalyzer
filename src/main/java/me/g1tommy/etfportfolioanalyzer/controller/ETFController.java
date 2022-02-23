@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/analyzer")
 @CrossOrigin(origins = "*")
 public class ETFController {
 
