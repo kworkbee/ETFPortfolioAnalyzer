@@ -1,10 +1,11 @@
 package me.g1tommy.etfportfolioanalyzer.entity;
 
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Entity
@@ -18,4 +19,10 @@ public class etf {
 
     @Column(nullable = false)
     public String etfQueryCode;
+
+    @Column(nullable = false)
+    public String issuerName;
+
+    @Column(nullable = false)
+    public Double closingPrice;
 }
