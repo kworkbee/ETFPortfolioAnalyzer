@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -42,7 +41,7 @@ public class ETFController {
 
         ETFResponse response = ETFResponse.builder()
                 ._meta(Optional.ofNullable(metaResponse))
-                .data(Collections.singletonList(result.getContent()))
+                .data(result.getContent())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -52,7 +51,7 @@ public class ETFController {
     public ResponseEntity<ETFResponse<isustock>> getStocksByETF(@PathVariable(name = "etfCode") String etfCode) {
         ETFResponse response = ETFResponse.builder()
                 ._meta(Optional.ofNullable(null))
-                .data(Collections.singletonList(etfService.getStocksByETF(etfCode)))
+                .data(etfService.getStocksByETF(etfCode))
                 .build();
 
         return ResponseEntity.ok(response);
