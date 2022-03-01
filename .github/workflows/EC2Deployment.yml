@@ -23,8 +23,8 @@ jobs:
       - name: ./gradlew Permission Setup
         run: chmod +x ./gradlew
 
-      - name: Build Gradle
-        run: ./gradlew build
+      - name: Make Jar
+        run: ./gradlew bootJar
 
       - name: Zip build file and deploy sh
         run: |
