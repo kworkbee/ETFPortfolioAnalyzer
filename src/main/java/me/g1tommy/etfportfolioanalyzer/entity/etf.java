@@ -25,4 +25,10 @@ public class etf {
 
     @Column(nullable = false)
     public Double closingPrice;
+
+    @Column(nullable = false)
+    public Double ratioDiff;
+
+    @Column(nullable = false)
+    public Long priceDiff;
 }
