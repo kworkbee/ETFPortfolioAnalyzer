@@ -22,16 +22,16 @@ public class ETFController {
 
     @GetMapping("/etfs")
     public ResponseEntity<ETFResponse<etf>> getETFList(
-            @RequestParam(value = "limit", required = false, defaultValue = "1") int limit,
+            @RequestParam(value = "size", required = false, defaultValue = "1") int size,
             @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
             @RequestParam(value = "query", required = false, defaultValue = "") String query
     ) {
         Page<etf> result;
         if (query.isEmpty()) {
-            result = etfService.getETFs(currentPage - 1, limit);
+            result = etfService.getETFs(currentPage - 1, size);
         }
 
-        result = etfService.filterETFs(currentPage - 1, limit, query);
+        result = etfService.filterETFs(currentPage - 1, size, query);
 
         MetaResponse metaResponse = MetaResponse.builder()
                 .totalItems(result.getTotalElements())
