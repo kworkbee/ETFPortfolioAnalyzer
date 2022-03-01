@@ -1,0 +1,66 @@
+name: EC2 Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: JDK 17 Installation
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17.0.2
+
+      - name: ./gradlew Permission Setup
+        run: chmod +x ./gradlew
+
+      - name: Build Gradle
+        run: ./gradlew build
+
+      - name: Zip build file and deploy sh
+        run: |
+          mv ./build/libs/*.jar ./
+          zip etf-analyzer.zip ./*.jar
+      - name: Upload To S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOYMENT }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOYMENT }}
+        run: |
+          aws s3 cp \
+            --region ap-northeast-2 \
+            etf-analyzer.zip s3://service.analyzer.g1tommy.me
+
+      - name: aws Configuration
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEPLOYMENT }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEPLOYMENT }}
+          aws-region: ap-northeast-2
+
+      - name: Deploy ec2
+        run: |
+          aws deploy create-deployment \
+            --application-name etf-analyzer \
+            --deployment-group-name etf-analyzer-deployment \
+            --s3-location bucket=service.analyzer.g1tommy.me,key=etf-analyzer.zip,bundleType=zip > deploymentId.txt
+          DEPLOYMENT_ID=$(cat deploymentId.txt | jq -r '.deploymentId')
+          echo "Wait 60 seconds for deployment and test"
+          sleep 60
+          IS_SUCCESS=$(aws deploy get-deployment --deployment-id $DEPLOYMENT_ID | jq -r '.deploymentInfo.status')
+          echo $IS_SUCCESS;
+          if [ "$IS_SUCCESS" = "Succeeded" ];
+          then
+            echo "SUCCESS DEPLOY!"
+          else
+            echo "FAIL DEPLOY!"
+            exit 1
+          fi
